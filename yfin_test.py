@@ -13,6 +13,7 @@ from scipy.optimize import Bounds
 from scipy.stats import norm
 import os
 import datetime
+from dateutil.relativedelta import relativedelta
 import statsmodels.api as sm
 
 # this module is utilized to prevent the annotations in the plot from overlapping
@@ -42,6 +43,7 @@ for t in tickers:
 
 
 st.header("YFinance Download Test")
+
 
 input_tickers = st.text_input("Enter the [Yahoo Finace](https://finance.yahoo.com) tickers of the assets you are interested in (seperated by comma). Make sure to select at least two.")
 # [link](https://share.streamlit.io/mesmith027/streamlit_webapps/main/MC_pi/streamlit_app.py)
@@ -78,7 +80,23 @@ if download_sucess:
     summary["standard deviation"] = annualized_std_retruns
     summary["weight"] = 1/len(summary)
     
-    
+     
+
+
+    ## Range selector
+    cols1,_ = st.beta_columns((1,2)) # To make it narrower
+    format = 'MMM DD, YYYY'  # format output
+    start_date = dt.date(year=2021,month=1,day=1)-relativedelta(years=2)  #  I need some range in the past
+    end_date = dt.datetime.now().date()-relativedelta(years=2)
+    max_days = end_date-start_date
+        
+    slider = cols1.slider('Select date', min_value=start_date, value=end_date ,max_value=end_date, format=format)
+    ## Sanity check
+    st.table(pd.DataFrame([[start_date, slider, end_date]],
+                   columns=['start',
+                               'selected',
+                               'end'],
+                      index=['date']))
 
 
     st.write("Monthly adjusted closing prices:")
